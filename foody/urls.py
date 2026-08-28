@@ -18,12 +18,13 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
-from userapp.views import signup,login
+from userapp.views import signup,login,dashboard
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("",signup,name="signup_link"),
-    path("login/",login,name="login_link")
+    path("login/",login,name="login_link"),
+    path("dashboard/",dashboard,name="dashboard_link")
 ]
 
 urlpatterns = urlpatterns + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

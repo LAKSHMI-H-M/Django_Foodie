@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from userapp.models import User
+from userapp.models import User,Restaurant,Category
 
 def signup(request):
   if request.method=="POST":
@@ -30,6 +30,7 @@ def login(request):
         request.session["USERID"] = user.id
         request.session["EMAIL"] = user.email
         request.session["NAME"] = user.name
+        return redirect("dashboard_link")
         return HttpResponse("Login success")
       else:
         return HttpResponse("Invalid Credentials")
@@ -38,6 +39,20 @@ def login(request):
     except User.MultipleObjectsReturned:
       return HttpResponse("Multiple Data Found")
   return render(request,"userapp/login.html")
-    
+
+def dashboard(request):
+  if "USERID" not in request.session:
+    return redirect("login_link")
+
+  restaurants=Restaurant.objects.filter(is_active=True)
+  categories=Category.objects.all()
+
+  context={
+    "username":request.session.get("NAME"),
+    "categories":categories,
+    "restaurants":restaurants
+
+  }
+  return render(request,"userapp/dashboard.html",context)    
 
     

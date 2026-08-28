@@ -91,3 +91,74 @@ class Food(models.Model):
     return self.name
 
 
+class Cart(models.Model):
+  user = models.ForeignKey(User,on_delete=models.CASCADE)
+  food = models.ForeignKey(Food,on_delete=models.CASCADE)
+  quantity = models.PositiveIntegerField(default=1)
+  added_at = models.DateTimeField(auto_now_add=True)
+  
+  def __str__(self):
+    return self.user.name
+  
+class Order(models.Model):
+  STATUS = (
+    ("Pending","Pending"),
+    ("Preparing","Preparing"),
+    ("Out of Delivery","Out of Delivery"),
+    ("Delivered","Delivered")
+  )
+  
+  user = models.ForeignKey(User,on_delete=models.CASCADE)
+  total_amount = models.DecimalField(max_digits=10,decimal_places=2)
+  delivery_address = models.TextField()
+  latitude = models.DecimalField(max_digits=10, decimal_places=7)
+  longitude = models.DecimalField(max_digits=10, decimal_places=7) 
+  status = models.CharField(max_length=50,choices=STATUS, default="Pending")
+  orderedat = models.DateTimeField(auto_now_add=True)
+  
+  def __str__(self):
+    return self.user.name
+  
+  
+class OrderItem(models.Model):
+  order = models.ForeignKey(Order,on_delete=models.CASCADE)
+  food = models.ForeignKey(Food,on_delete=models.CASCADE)
+  quantity = models.PositiveIntegerField()
+  price = models.DecimalField(max_digits=8,decimal_places=2)
+  
+  def __str__(self):
+    return self.food.name
+  
+class Payment(models.Model):
+  METHOD = (
+    ("UPI","UPI"),
+    ("Card","Card"),
+    ("Cash","Cash")
+  )
+  
+  STATUS = (
+    ("Pending","Pending"),
+    ("Success","Success"),
+    ("Failed","Failed")
+  )
+  
+  order = models.OneToOneField(Order, on_delete=models.CASCADE)
+  paymentmethod = models.CharField(max_length=30,choices=METHOD)
+  amount = models.DecimalField(max_digits=10,decimal_places=2)
+  paymentstatus = models.CharField(max_length=20,choices=STATUS)
+  
+  def __str__(self):
+    return self.order.user.name
+  
+class Delivery(models.Model):
+  order = models.OneToOneField(Order,on_delete=models.CASCADE)
+  ridername = models.CharField(max_length=200)
+  riderphone = models.PositiveBigIntegerField()
+  currentlatitude = models.DecimalField(max_digits=10, decimal_places=7)
+  currentlongitude = models.DecimalField(max_digits=10, decimal_places=7)
+  estimatedtime = models.IntegerField()
+  delivered  = models.BooleanField(default=False)
+  
+  def __str__(self):
+    return self.order.user.name
+  
